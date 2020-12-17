@@ -1,0 +1,11 @@
+* body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 60vh;
+  border-style: border-box;
+  padding-top: 15px;
+  background: rgb(54, 122, 211);
+}
