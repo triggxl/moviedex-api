@@ -24,7 +24,7 @@ app.use(function validateBearerToken(req, res, next) {
   const authToken = req.get('Authorization');
   console.log('validate bearer token middleware');
   if(!authToken || authToken.split(' ')[1] !== apiToken) {
-    res.status(401).json({ error: 'Unathorized request' });
+    return res.status(401).json({ error: 'Unathorized request' });
   }
   next();
 })
@@ -34,7 +34,7 @@ const handleGetTypes = (req, res) => {
   res.json(validTypes);
 }
 
-// route handler
+// request handler
 const handleGetMovie = (req, res) => {
   console.log('abc')
   //iterate through data to match query
@@ -42,7 +42,7 @@ const handleGetMovie = (req, res) => {
     movieData.film_title.toLowerCase().includes(req.query.film_title.toLowerCase())
   )
   res.json(response)
-  console.log(response)
+  // console.log(response)
 }
 const handleGetGenre = (req, res) => {
   res.json(movieData['genre'])
