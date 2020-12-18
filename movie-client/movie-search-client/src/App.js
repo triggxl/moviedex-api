@@ -15,7 +15,6 @@ class App extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    // console.log(this.state.movieName)
     fetch(`http://localhost:8000/movies?film_title=${this.state.film_title}`).then(res => {
       //!res.ok
     return res.json()
@@ -32,6 +31,7 @@ class App extends Component {
   //   .then(([data1, data2]) => this.setState({
   //   }))
   // }
+  //https://stackoverflow.com/questions/49754270/multiple-fetch-requests-with-setstate-in-react
 //API on 8000 
   //controlled input pattern: includes an onChange sets state and value that uses the state
   render() {

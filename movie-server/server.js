@@ -6,7 +6,8 @@ const movieData = require('./moviedex-data');
 const cors = require('cors');
 
 const app = express();
-app.use(morgan('dev')); //tracks logging
+const morganSetting = process.env.NODE_ENV === 'production' ? 'tiny' : 'common';
+app.use(morgan(morganSetting));
 app.use(helmet());
 app.use(cors({ origin: 'http://localhost:3000' })); //ternary if dev, if live (vercel)
 
@@ -15,14 +16,12 @@ app.get('/', (req, res) => {
 })
 
 process.env.API_TOKEN;
-console.log(process.env.API_TOKEN)
 
 const validTypes = { movieData: 'genre', movieData: 'country', movieData: 'avg_vote'};
 
 app.use(function validateBearerToken(req, res, next) {
   const apiToken = process.env.API_TOKEN;
   const authToken = req.get('Authorization');
-  console.log('validate bearer token middleware');
   if(!authToken || authToken.split(' ')[1] !== apiToken) {
     return res.status(401).json({ error: 'Unathorized request' });
   }
@@ -36,13 +35,11 @@ const handleGetTypes = (req, res) => {
 
 // request handler
 const handleGetMovie = (req, res) => {
-  console.log('abc')
   //iterate through data to match query
   let response = movieData.find(movieData => 
     movieData.film_title.toLowerCase().includes(req.query.film_title.toLowerCase())
   )
   res.json(response)
-  // console.log(response)
 }
 const handleGetGenre = (req, res) => {
   res.json(movieData['genre'])
@@ -84,7 +81,16 @@ app.get('/movies', handleGetMovie)
 //   res.json(response);
 // })
 
-const PORT = 8000;
+app.use((error, req, res, next) => {
+  let response;
+  if(process.env.NODE_ENV === 'production') {
+    response = { error : { message: 'server error' }};
+  }else {
+    response = { error };
+  }
+  res.status(500).json(response);
+})
+const PORT = 8000 || process.env.PORT;
 
 app.listen(PORT, () => {
   console.log(`Server is listening at http://localhost:${PORT}`);
