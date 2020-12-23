@@ -9,3 +9,9 @@
   padding-top: 15px;
   background: rgb(54, 122, 211);
 }
+
+/*
+trying to hide unless API call displays results 
+ul {
+  visibility: hidden;
+} */

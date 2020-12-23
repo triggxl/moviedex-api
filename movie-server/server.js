@@ -15,13 +15,12 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 })
 
-process.env.API_TOKEN;
-
 const validTypes = { movieData: 'genre', movieData: 'country', movieData: 'avg_vote'};
 
 app.use(function validateBearerToken(req, res, next) {
   const apiToken = process.env.API_TOKEN;
   const authToken = req.get('Authorization');
+  console.log(authToken, apiToken);
   if(!authToken || authToken.split(' ')[1] !== apiToken) {
     return res.status(401).json({ error: 'Unathorized request' });
   }
@@ -42,20 +41,27 @@ const handleGetMovie = (req, res) => {
   res.json(response)
 }
 const handleGetGenre = (req, res) => {
-  res.json(movieData['genre'])
+  let response = movieData.find(movieData => 
+    movieData.genre.toLowerCase().includes(req.query.genre.toLowerCase())
+  )
+  res.json(response)
 }
 const handleGetCountry = (req, res) => {
-  res.json(movieData['country'])
+  let response = movieData.find(movieData => movieData.country.toLowerCase().includes(req.query.country.toLowerCase())
+  )
+  res.json(response)
 }
 const handleGetAvgVote = (req, res) => {
-  res.json(movieData['avg_vote'])
+  let response = movieData.find(movieData => movieData.avg_vote.toLowerCase().includes(req.query.avg_vote.toLowerCase())
+  )
+  res.json(response)
 }
 
 // route
 app.get('/movies', handleGetMovie)
-// app.get('/genres', handleGetTypes);
-// app.get('/country', handleGetTypes);
-// app.get('/avg_vote', handleGetTypes);
+app.get('/genres', handleGetGenre);
+app.get('/country', handleGetCountry);
+app.get('/avg_vote', handleGetAvgVote);
 
 // //filter by type if valid
 
