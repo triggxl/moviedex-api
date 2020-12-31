@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
-const movieData = require('./moviedex-data');
+const moviesData = require('./moviedex-data');
 const cors = require('cors');
 
 const app = express();
@@ -15,8 +15,6 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 })
 
-const validTypes = { movieData: 'genre', movieData: 'country', movieData: 'avg_vote'};
-
 app.use(function validateBearerToken(req, res, next) {
   const apiToken = process.env.API_TOKEN;
   const authToken = req.get('Authorization');
@@ -27,65 +25,36 @@ app.use(function validateBearerToken(req, res, next) {
   next();
 })
 
-//separate middleware as cb into named fx to pass into app
-const handleGetTypes = (req, res) => {
-  res.json(validTypes);
-}
-
 // request handler
 const handleGetMovie = (req, res) => {
   //iterate through data to match query
-  let response = movieData.find(movieData => 
+  let response = moviesData;
+
+  if(req.query.film_title) {
+    response = response.filter(movieData => 
     movieData.film_title.toLowerCase().includes(req.query.film_title.toLowerCase())
   )
-  res.json(response)
-}
-const handleGetGenre = (req, res) => {
-  let response = movieData.find(movieData => 
+  }
+  if(req.query.genre) {
+    response = response.filter(movieData => 
     movieData.genre.toLowerCase().includes(req.query.genre.toLowerCase())
-  )
-  res.json(response)
-}
-const handleGetCountry = (req, res) => {
-  let response = movieData.find(movieData => movieData.country.toLowerCase().includes(req.query.country.toLowerCase())
-  )
-  res.json(response)
-}
-const handleGetAvgVote = (req, res) => {
-  let response = movieData.find(movieData => movieData.avg_vote.toLowerCase().includes(req.query.avg_vote.toLowerCase())
-  )
+    )
+  }
+  if(req.query.country) {
+    response = response.filter(movieData => 
+    movieData.country.toLowerCase().includes(req.query.country.toLowerCase())
+    )
+  }
+  if(req.query.avg_vote) {
+    response = response.filter(movieData => 
+    Number(movieData.avg_vote) >= Number(req.query.avg_vote)
+    )
+  }
   res.json(response)
 }
 
 // route
 app.get('/movies', handleGetMovie)
-app.get('/genres', handleGetGenre);
-app.get('/country', handleGetCountry);
-app.get('/avg_vote', handleGetAvgVote);
-
-// //filter by type if valid
-
-// app.get('/genres', handleGetGenre), (req, res) => {
-//   let response = movieData['genre'];
-//   if(req.query.genre) {
-//     res = res.filter(movieData => {movieData.genre.toLowerCase().includes(req.query.genre.toLowerCase())});
-//   }
-//   res.json(response);
-// }
-// app.get('/country', handleGetCountry, (req, res) => {
-//   let response = movieData['country'];
-//   if(req.query.genre) {
-//     res = res.filter(movieData => {movieData.country.toLowerCase().includes(req.query.country.toLocaleLowerCase())});
-//   }
-//   res.json(response);
-// })
-// app.get('/avg_vote', handleGetAvgVote, (req, res) => {
-//   let response = movieData['avg_vote'];
-//   if(req.query.avg_vote) {
-//     res = res.filter(movieData.avg_vote.toLowerCase().includes(req.query.avg_vote.toLowerCase()));
-//   }
-//   res.json(response);
-// })
 
 app.use((error, req, res, next) => {
   let response;

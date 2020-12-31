@@ -5,6 +5,13 @@ const movieData = require('./moviedex-data');
 app = express();
 app.use(morgan('dev'));
 
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+  // https://stackoverflow.com/questions/54795740/access-to-fetch-at-from-origin-has-been-blocked-by-cors-policy-no-acce
+})
+
 //params, logic, res.json()
 app.use('/movies', (req, res) => { 
  const { search='' } = req.query;
